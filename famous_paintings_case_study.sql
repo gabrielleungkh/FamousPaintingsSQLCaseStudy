@@ -171,14 +171,21 @@ CREATE TABLE IF NOT EXISTS MUSEUM_HOURS_Q8 AS TABLE MUSEUM_HOURS;
 
 -- check if the opening time is later than the closing time for any entry
 
-SELECT * FROM MUSEUM_HOURS_Q8 WHERE CAST(OPEN AS TIME) > CAST(CLOSE AS TIME)
+SELECT * 
+FROM MUSEUM_HOURS_Q8 
+WHERE CAST(OPEN AS TIME) > CAST(CLOSE AS TIME);
 -- failed to cast because of some bad formatting
 -- fix formatting to do the check
-UPDATE MUSEUM_HOURS_Q8 SET CLOSE = '08:00:PM' WHERE CLOSE = '08 :00:PM'
+UPDATE MUSEUM_HOURS_Q8 
+SET CLOSE = '08:00:PM' 
+WHERE CLOSE = '08 :00:PM';
 -- no errors in opening time vs closing time
 
 -- check for duplicate records
-SELECT MUSEUM_ID, DAY, COUNT(*) FROM MUSEUM_HOURS_Q8 GROUP BY MUSEUM_ID, DAY HAVING COUNT(*) > 1
+SELECT MUSEUM_ID, DAY, COUNT(*) 
+FROM MUSEUM_HOURS_Q8 
+GROUP BY MUSEUM_ID, DAY 
+HAVING COUNT(*) > 1;
 
 -- duplicate record exists so remove it
 
@@ -199,10 +206,9 @@ RANK() OVER(ORDER BY COUNT(W.WORK_ID) DESC)
 FROM WORK W 
 JOIN SUBJECT S ON W.WORK_ID = S.WORK_ID
 GROUP BY S.SUBJECT
-LIMIT 10
+LIMIT 10;
 
 -- 10) Identify the museums which are open on both Sunday and Monday. Display museum name, city.
-
 
 (SELECT M.NAME, M.CITY
 FROM MUSEUM M
@@ -215,17 +221,29 @@ FROM MUSEUM M
 JOIN MUSEUM_HOURS MH
 ON M.MUSEUM_ID = MH.MUSEUM_ID
 WHERE MH.DAY = 'Monday')
-ORDER BY NAME
-
+ORDER BY NAME;
 
 -- 11) How many museums are open every single day?
 
 SELECT COUNT(*) AS NUM_MUSEUMS
 FROM (SELECT COUNT(*) FROM MUSEUM_HOURS
 		GROUP BY MUSEUM_ID
-		HAVING COUNT(*) = 7)
+		HAVING COUNT(*) = 7);
 
 -- 12) Which are the top 5 most popular museum? (Popularity is defined based on most no of paintings in a museum)
+
+SELECT * 
+FROM MUSEUM M
+JOIN (SELECT W.MUSEUM_ID,
+	  	COUNT(W.MUSEUM_ID),
+	  	RANK() OVER(ORDER BY COUNT(W.WORK_ID) DESC)
+		FROM WORK W
+		JOIN MUSEUM M
+		ON W.MUSEUM_ID = M.MUSEUM_ID
+		GROUP BY W.MUSEUM_ID) AS X
+ON M.MUSEUM_ID = X.MUSEUM_ID
+WHERE X.RANK <= 5
+ORDER BY X.RANK;
 
 -- 13) Who are the top 5 most popular artist? (Popularity is defined based on most no of paintings done by an artist)
 
