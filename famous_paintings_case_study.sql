@@ -247,6 +247,19 @@ ORDER BY X.RANK;
 
 -- 13) Who are the top 5 most popular artist? (Popularity is defined based on most no of paintings done by an artist)
 
+SELECT *
+FROM ARTIST A
+JOIN (SELECT W.ARTIST_ID,
+	  	COUNT(W.ARTIST_ID),
+	  	RANK() OVER(ORDER BY COUNT(W.WORK_ID) DESC)
+		FROM WORK W
+		JOIN ARTIST A
+		ON W.ARTIST_ID = A.ARTIST_ID
+		GROUP BY W.ARTIST_ID) AS X
+ON A.ARTIST_ID = X.ARTIST_ID
+WHERE X.RANK <= 5
+ORDER BY X.RANK;
+
 -- 14) Display the 3 least popular canva sizes
 
 -- 15) Which museum is open for the longest during a day. Dispay museum name, state and hours open and which day?
