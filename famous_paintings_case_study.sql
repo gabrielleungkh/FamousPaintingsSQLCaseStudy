@@ -262,6 +262,19 @@ ORDER BY X.RANK;
 
 -- 14) Display the 3 least popular canva sizes
 
+SELECT *
+FROM (SELECT PS.SIZE_ID,
+		CS.LABEL,
+	  	COUNT(W.WORK_ID),
+	  	DENSE_RANK() OVER(ORDER BY COUNT(W.WORK_ID))
+		FROM WORK W
+		JOIN PRODUCT_SIZE PS
+		ON W.WORK_ID = PS.WORK_ID
+		JOIN CANVAS_SIZE CS
+		ON PS.SIZE_ID = CAST(CS.SIZE_ID AS TEXT)
+		GROUP BY PS.SIZE_ID, CS.LABEL) AS X
+WHERE X.DENSE_RANK <= 3;
+
 -- 15) Which museum is open for the longest during a day. Dispay museum name, state and hours open and which day?
 
 -- 16) Which museum has the most no of most popular painting style?
