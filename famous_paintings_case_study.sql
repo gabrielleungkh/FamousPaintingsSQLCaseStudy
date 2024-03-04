@@ -210,6 +210,8 @@ LIMIT 10;
 
 -- 10) Identify the museums which are open on both Sunday and Monday. Display museum name, city.
 
+-- find all museums that are open on Sunday
+-- intersect that with all museums that are open on Monday
 (SELECT M.NAME, M.CITY
 FROM MUSEUM M
 JOIN MUSEUM_HOURS MH
@@ -232,6 +234,9 @@ FROM (SELECT COUNT(*) FROM MUSEUM_HOURS
 
 -- 12) Which are the top 5 most popular museum? (Popularity is defined based on most no of paintings in a museum)
 
+-- use rank() window function to find the top 5
+-- since the column created by a window function can't be used directly,
+-- use it as a subquery to isolate the top 5 museums
 SELECT * 
 FROM MUSEUM M
 JOIN (SELECT W.MUSEUM_ID,
@@ -262,6 +267,9 @@ ORDER BY X.RANK;
 
 -- 14) Display the 3 least popular canva sizes
 
+-- some size_id's correspond to the same painting size described by the label
+-- group by both those parameters
+-- use dense_rank() instead of rank() so bottom 3 can be ranked more easily
 SELECT *
 FROM (SELECT PS.SIZE_ID,
 		CS.LABEL,
