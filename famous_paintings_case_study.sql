@@ -285,7 +285,46 @@ WHERE X.DENSE_RANK <= 3;
 
 -- 15) Which museum is open for the longest during a day. Dispay museum name, state and hours open and which day?
 
+DROP TABLE IF EXISTS MUSEUM_HOURS_Q15;
+CREATE TABLE IF NOT EXISTS MUSEUM_HOURS_Q15 AS TABLE MUSEUM_HOURS;
+
+-- failed to cast because of some bad formatting
+-- fix formatting to cast
+UPDATE MUSEUM_HOURS_Q15
+SET CLOSE = '08:00:PM'
+WHERE CLOSE = '08 :00:PM';
+
+SELECT M.NAME, M.STATE, X.HOURS_OPEN, X.DAY
+FROM MUSEUM M
+JOIN (SELECT MUSEUM_ID, DAY,
+		(CAST(CLOSE AS TIME) - CAST(OPEN AS TIME)) AS HOURS_OPEN
+		FROM MUSEUM_HOURS_Q15) AS X
+ON M.MUSEUM_ID = X.MUSEUM_ID
+ORDER BY HOURS_OPEN DESC
+LIMIT 1;
+
 -- 16) Which museum has the most no of most popular painting style?
+
+-- to find most popular painting style use CTE
+WITH POPULAR_STYLE AS (SELECT STYLE, COUNT(WORK_ID),
+						RANK() OVER(ORDER BY COUNT(WORK_ID) DESC)
+						FROM WORK
+						GROUP BY STYLE)
+-- main query will show museum name, most popular art style,
+-- and number of paintings of that style
+SELECT M.NAME, Q.STYLE, Q.COUNT AS NUM_PAINTINGS
+FROM MUSEUM M
+JOIN (SELECT M.MUSEUM_ID, W.STYLE, COUNT(1)
+		FROM WORK W
+		JOIN MUSEUM M
+		ON W.MUSEUM_ID = M.MUSEUM_ID
+		WHERE STYLE = (SELECT STYLE
+						FROM POPULAR_STYLE
+						WHERE RANK = 1)
+		GROUP BY M.MUSEUM_ID, W.STYLE
+		ORDER BY COUNT(1) DESC
+		LIMIT 1) AS Q
+ON M.MUSEUM_ID = Q.MUSEUM_ID
 
 -- 17) Identify the artists whose paintings are displayed in multiple countries
 
