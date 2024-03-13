@@ -328,6 +328,18 @@ ON M.MUSEUM_ID = Q.MUSEUM_ID
 
 -- 17) Identify the artists whose paintings are displayed in multiple countries
 
+SELECT FULL_NAME, COUNT(COUNTRY)
+FROM (SELECT DISTINCT A.FULL_NAME, M.COUNTRY
+		FROM ARTIST A
+		JOIN WORK W
+		ON A.ARTIST_ID = W.ARTIST_ID
+		JOIN MUSEUM M
+		ON W.MUSEUM_ID = M.MUSEUM_ID
+		ORDER BY A.FULL_NAME)
+GROUP BY FULL_NAME
+HAVING COUNT(COUNTRY) > 1
+ORDER BY COUNT(COUNTRY) DESC
+
 -- 18) Display the country and the city with most no of museums. Output 2 seperate columns to mention the city and country. If there are multiple value, seperate them with comma.
 
 -- 19) Identify the artist and the museum where the most expensive and least expensive painting is placed. Display the artist name, sale_price, painting name, museum name, museum city and canvas label
