@@ -340,7 +340,27 @@ GROUP BY FULL_NAME
 HAVING COUNT(COUNTRY) > 1
 ORDER BY COUNT(COUNTRY) DESC
 
--- 18) Display the country and the city with most no of museums. Output 2 seperate columns to mention the city and country. If there are multiple value, seperate them with comma.
+-- 18) Display the country and the city with most no of museums. Output 2 separate columns to mention the city and country. If there are multiple values, separate them with comma.
+
+WITH MOST_COUNTRY AS (SELECT COUNTRY, COUNT(1)
+						FROM MUSEUM
+						GROUP BY COUNTRY
+						ORDER BY COUNT(1) DESC),
+	 COUNTRY_RANK AS (SELECT COUNTRY, COUNT,
+						RANK() OVER(ORDER BY COUNT DESC) AS RNK
+						FROM MOST_COUNTRY),
+	 MOST_CITY AS (SELECT CITY, COUNT(1)
+						FROM MUSEUM
+						GROUP BY CITY
+						ORDER BY COUNT(1) DESC),
+	 CITY_RANK AS (SELECT CITY, COUNT,
+						RANK() OVER(ORDER BY COUNT DESC) AS RNK
+						FROM MOST_CITY)
+SELECT STRING_AGG(DISTINCT X.COUNTRY, ', ') AS COUNTRY, STRING_AGG(Y.CITY, ', ') AS CITY
+FROM COUNTRY_RANK AS X
+CROSS JOIN
+CITY_RANK AS Y
+WHERE X.RNK = 1 AND Y.RNK = 1
 
 -- 19) Identify the artist and the museum where the most expensive and least expensive painting is placed. Display the artist name, sale_price, painting name, museum name, museum city and canvas label
 
