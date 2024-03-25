@@ -362,7 +362,18 @@ CROSS JOIN
 CITY_RANK AS Y
 WHERE X.RNK = 1 AND Y.RNK = 1
 
--- 19) Identify the artist and the museum where the most expensive and least expensive painting is placed. Display the artist name, sale_price, painting name, museum name, museum city and canvas label
+-- 19) Identify the artist and the museum where the most expensive and least expensive painting is placed. 
+--	   Display the artist name, sale_price, painting name, museum name, museum city and canvas label
+
+SELECT * FROM ARTIST
+-- artist full_name
+SELECT * FROM PRODUCT_SIZE ORDER BY SALE_PRICE
+-- sale_price
+SELECT * FROM WORK
+-- painting name
+SELECT * FROM MUSEUM
+-- museum name, city
+SELECT * FROM CANVAS_SIZE
 
 -- 20) Which country has the 5th highest no of paintings?
 
